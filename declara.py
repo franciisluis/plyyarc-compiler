@@ -89,9 +89,9 @@ class Variable(Declaration):
         if(self.value==None):
             if(type=="int"):
                 self.value=0
-            elif(type=="bool"):
-                self.value=False
-            elif(type=="string"):
+            elif(type=="float"):
+                self.value=0
+            elif(type=="char"):
                 self.value=''
 
     def __str__(self):

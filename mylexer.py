@@ -4,8 +4,8 @@ sys.path.append("../..")
 
 from ply import *
 
-if "cmm" not in sys.argv[0]:
-    print ("usage : cmm inputfile")
+if "main" not in sys.argv[0]:
+    print ("usage : main inputfile")
     raise SystemExit
 
 
@@ -14,19 +14,18 @@ palavras reservadas
 bool break for false if int return string true void while
 '''
 reserved = {
-	'bool'	:	'BOOL',
-	'break'	:	'BREAK',
+	'char'	:	'CHAR',
 	'for'	:	'FOR',
-	'false'	:	'FALSE',
 	'if'	:	'IF',
 	'else'	:	'ELSE',
 	'int'	:	'INT',
-	'return':	'RETURN',
-	'string':	'STRING',
-	'true'	:	'TRUE',
+	'float':	'FLOAT',
 	'while'	:	'WHILE',
-	'write' :	'WRITE',
-	'read' :	'READ'
+    'break' : 'BREAK',
+    'switch':'SWITCH',
+    'case':'CASE',
+    'default':'DEFAULT'
+
 }
 
 
@@ -84,16 +83,11 @@ t_ASSIGN		= r'='
 #t_ASPAS			= r'\"'
 
 '''
-t_BOOL 		= r'bool'
-t_BREAK		= r'break'
+t_CHAR 		= r'char'
+t_FLOAT	    = r'float'
 t_FOR		= r'for'
-t_FALSE		= r'false'
 t_IF		= r'if'
 t_INT		= r'int'
-t_RETURN	= r'return'
-t_STRING	= r'string'
-t_TRUE		= r'true'
-t_VOID		= r'void'
 t_WHILE		= r'while'
 t_PROCEDURE	= r'proc'
 t_FUNCTION	= r'func'

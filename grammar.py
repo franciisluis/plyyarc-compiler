@@ -4,13 +4,13 @@ sys.path.append("../..")
 
 import ply.yacc as yacc
 import errors
-import declarations
-from declarations import *
+import declara
+from declara import *
 from mylexer import tokens
 import mylexer
 
-if "cmm" not in sys.argv[0]:
-    print ("usage : cmm inputfile")
+if "main" not in sys.argv[0]:
+    print ("usage : main inputfile")
     raise SystemExit
 
 GLOBAL="GLOBAL"
@@ -47,8 +47,6 @@ def p_define_end_of_instruction(p):
 
 def p_literal(t):
     '''literal : NUMBER
-                | TRUE
-                | FALSE
                 | NORMALSTRING
                 '''
     t[0]=t[1]
@@ -60,8 +58,8 @@ def p_sequence_literal(t):
 
 def p_define_type(t):
     '''type : INT
-            | STRING
-            | BOOL'''
+            | FLOAT
+            | CHAR'''
     t[0]=t[1]
 
 def p_variavel(t):
@@ -153,7 +151,8 @@ def p_list_parametro(t):
 
 def p_sequence_parametro(t):
     '''sequence_parametro : parametro COMMA sequence_parametro
-                          | parametro'''
+                          | parametro
+                          | expression'''
     if(len(t)>2):
         t[0]=[t[1], t[3]]
     else:
@@ -198,8 +197,7 @@ def p_define_expression_literal(t):
 def p_define_expression_var(t):
     'expression : variavel'
     t[0]=var_global.show(t[1])
-
-def p_expression_logop(t):
+def p_expression_logop(p):
     '''expression : expression MAIOR expression
                   | expression MENOR expression
                   | expression MAIOREQUALS expression
@@ -208,15 +206,23 @@ def p_expression_logop(t):
                   | expression DIFF expression
                   | expression AND expression
                   | expression OR expression'''
-    if t[2] == '>'  : t[0] = t[1] > t[3]
-    elif t[2] == '<': t[0] = t[1] < t[3]
-    elif t[2] == '>=': t[0] = t[1] >= t[3]
-    elif t[2] == '<=': t[0] = t[1] <= t[3]
-    elif t[2] == '==': t[0] = t[1] == t[3]
-    elif t[2] == '!=': t[0] = t[1] != t[3]
-    elif t[2] == '&&': t[0] = t[1] and t[3]
-    elif t[2] == '||': t[0] = t[1] or t[3]
-    else: errors.unknownSignal(t)
+    if p[2] == '>':
+        p[0] = p[1] > p[3]
+    elif p[2] == '<':
+        p[0] = p[1] < p[3]
+    elif p[2] == '>=':
+        p[0] = p[1] >= p[3]
+    elif p[2] == '<=':
+        p[0] = p[1] <= p[3]
+    elif p[2] == '==':
+        p[0] = p[1] == p[3]
+    elif p[2] == '!=':
+        p[0] = p[1] != p[3]
+    elif p[2] == '&&':
+        p[0] = p[1] and p[3]
+    elif p[2] == '||':
+        p[0] = p[1] or p[3]
+    else: errors.unknownSignal(p)
 
 
 def p_binary_operators(p):
@@ -233,7 +239,7 @@ def p_binary_operators(p):
         p[0] = p[1] * p[3]
     elif p[2] == '/':
         p[0] = p[1] / p[3]
-    else: errors.unknownSignal(t)
+    else: errors.unknownSignal(p)
 
 def p_define_expression_subcall(t):
     'expression : subCall_statement end'
@@ -281,12 +287,9 @@ def p_statement(t):
     '''statement    : if_statement
                     | while_statement
                     | for_statement
-                    | break_statement
-                    | return_statement
                     | assignment end
                     | subCall_statement end
-                    | write_statement end
-                    | read_statement end
+                    | switch_statement
     '''
     t[0]=t[1]
 
@@ -305,6 +308,9 @@ def p_statement_if(t):
         if(len(t)>10): #with else
             t[0]=t[10]
 
+def p_statement_switch(t):
+    '''switch_statement : SWITCH LPAREN expression RPAREN LBRACE CASE COLON LBRACE block BREAK RBRACE RBRACE
+                        | SWITCH LPAREN expression RPAREN LBRACE CASE COLON LBRACE block BREAK RBRACE DEFAULT COLON block RBRACE RBRACE'''
 def p_statement_while(t):
     'while_statement : WHILE LPAREN expression RPAREN LBRACE block RBRACE'
 
@@ -312,29 +318,12 @@ def p_statement_for(t):
     'for_statement  :  FOR LPAREN assignment SEMICOLON expression SEMICOLON assignment RPAREN LBRACE block RBRACE'
 
 
-def p_statement_break(t):
-    'break_statement    :   BREAK end'
-
-def p_statement_return(t):
-    '''return_statement : RETURN end
-                        | RETURN expression end'''
-
 def p_statement_subCall(t):
     '''subCall_statement : NAME LPAREN list_expression RPAREN'''
 
 ################################################################################
 #I/O
-def p_statement_write(t):
-    '''write_statement : WRITE  list_expression '''
-    tmp=""
-    for element in t[2]:
-        tmp+=str(element)+" "
-    print ("In Exectution: "+tmp)
 
-
-def p_statement_read(t):
-    '''read_statement : READ variavel '''
-    t[3].value = raw_input();
 
 ##############################################################################
 #block
@@ -349,7 +338,7 @@ def p_block(t):
 #errors
 
 
-'''def p_var_declaration_error(p):
+def p_var_declaration_error(p):
     'var_Declaration : type error end'
     errors.VarDecError(p)
 
@@ -357,7 +346,7 @@ def p_var_declaration_error2(p):
     'var_Declaration : type var_Especification'
     errors.NoSemicolonError(p)
 
-def p_var_declaration_error3(p):
+'''def p_var_declaration_error3(p):
     'var_Declaration : empty var_Especification end'
     errors.NoTypeError(p)'''
 
