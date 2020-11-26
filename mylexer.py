@@ -42,10 +42,8 @@ tokens e simbolos
 ( ) [ ] { } , ; + - * / == != > >= < <= || && ! = += -= *= /= %= ? :
 '''
 t_ignore 		= ' \t'
-
 t_RPAREN		= r'\)'
 t_LPAREN		= r'\('
-
 
 t_RCOLC			= r'\]'
 t_LCOLC			= r'\['

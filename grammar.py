@@ -159,10 +159,14 @@ def p_sequence_parametro(t):
         t[0]=t[1]
 
 def p_procedure(t):
-    '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    p=Procedure(t[1], t[3], Block(t[2],t[6][0],t[6][1]))
-    var_global.add(p)
-    t[0]=p
+    '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE
+                 | NAME LBRACE block RBRACE'''
+    if(len(t)==7):
+        p=Procedure(t[1], t[3], Block(t[2],t[6][0],t[6][1]))
+        var_global.add(p)
+        t[0]=p
+    else:
+        pass
 
 def p_function(t):
     '''function : type NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
@@ -287,9 +291,9 @@ def p_statement(t):
     '''statement    : if_statement
                     | while_statement
                     | for_statement
-                    | assignment end
                     | subCall_statement end
                     | switch_statement
+                    | assignment end
     '''
     t[0]=t[1]
 
@@ -299,18 +303,20 @@ def p_list_statement(t):
 
 def p_statement_if(t):
     '''if_statement : IF LPAREN expression RPAREN LBRACE block RBRACE
-                    | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE'''
-
-
+                    | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE '''
     if(t[3]):
         t[0]=t[6]
     else:
-        if(len(t)>10): #with else
-            t[0]=t[10]
+        t[0] =t[10]
 
 def p_statement_switch(t):
-    '''switch_statement : SWITCH LPAREN expression RPAREN LBRACE CASE COLON LBRACE block BREAK RBRACE RBRACE
-                        | SWITCH LPAREN expression RPAREN LBRACE CASE COLON LBRACE block BREAK RBRACE DEFAULT COLON block RBRACE RBRACE'''
+    '''switch_statement : SWITCH LPAREN variavel RPAREN LBRACE body_case RBRACE'''
+def p_body_case(t):
+    '''body_case : list_case block BREAK'''
+def p_list_case(t):
+    '''list_case : CASE recupera_valor COLON'''
+def p_recupera_valor(t):
+    '''recupera_valor : literal '''
 def p_statement_while(t):
     'while_statement : WHILE LPAREN expression RPAREN LBRACE block RBRACE'
 
@@ -338,13 +344,13 @@ def p_block(t):
 #errors
 
 
-def p_var_declaration_error(p):
-    'var_Declaration : type error end'
-    errors.VarDecError(p)
+#def p_var_declaration_error(p):
+ #   'var_Declaration : type error end'
+ #   errors.VarDecError(p)
 
-def p_var_declaration_error2(p):
-    'var_Declaration : type var_Especification'
-    errors.NoSemicolonError(p)
+#def p_var_declaration_error2(p):
+#    'var_Declaration : type var_Especification'
+#    errors.NoSemicolonError(p)
 
 '''def p_var_declaration_error3(p):
     'var_Declaration : empty var_Especification end'

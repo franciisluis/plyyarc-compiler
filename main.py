@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#FRANCIS E ESTER
 import sys
 sys.path.append("../..")
 
@@ -13,4 +14,4 @@ arquive = open(filename).read()
 grammar.parser.parse(arquive)
 
 if imprimir:
-    print(grammar.var_global)          # Show parser object
+    print(grammar.var_global)
